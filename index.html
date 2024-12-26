@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Fotos</title>
+		<meta name="theme-color" content="#FFBF00">
+		<style>
+			body {
+				margin: 0;
+				font-family: Arial, Helvetica, sans-serif;
+			}
+			.titulo {
+				padding: 20px;
+				font-size: 20px;
+				font-weight: bold;
+				text-align: center;
+			}
+			.imagem {
+				width: 100%;
+				display: block;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="titulo">
+			Fotos da Madeira
+		</div>
+		<div class="conteudo">
+			<img class="imagem" src="imagens/costa.jpg">
+			<img class="imagem" src="imagens/vila.webp">
+			<img class="imagem" src="imagens/lobos.webp">
+			<img class="imagem" src="imagens/miradouro.jpg">
+			<img class="imagem" src="imagens/levada.jpeg">
+			<img class="imagem" src="imagens/rochas.jpg">
+			<img class="imagem" src="imagens/rei.webp">
+			<img class="imagem" src="imagens/seixal.jpg">
+			<img class="imagem" src="imagens/lagoa.webp">
+		</div>
+		<script>
+			function masonryGrid(selector, options) {
+				const settings = Object.assign({ columns: 3, breakpoint: 700 }, options)
+				let itemCount = 0
+				let isDesktop = false
+
+				const grids = document.querySelectorAll(selector)
+
+				grids.forEach(grid => {
+					grid.classList.add('masonry-grid-origin')
+
+					const items = grid.children
+					Array.from(items).forEach(item => item.classList.add('masonry-grid-item'))
+				})
+
+				function createMasonry() {
+					itemCount = 0
+
+					grids.forEach((grid, indexGrid) => {
+						for (let indexColumn = 1; indexColumn <= settings.columns; indexColumn++) {
+							const column = document.createElement('div')
+							column.classList.add('masonry-grid-column')
+							column.id = `masonry-grid-column-${indexGrid + 1}-${indexColumn}`
+							column.style.width = '100%'
+							grid.appendChild(column)
+						}
+
+						grid.style.display = 'flex'
+
+						let currentColumn = 1
+
+						const items = grid.querySelectorAll('.masonry-grid-item')
+						items.forEach(item => {
+							if (currentColumn > settings.columns)
+								currentColumn = 1
+
+							itemCount++
+
+							item.id = `masonry-grid-item-${itemCount}`
+							const column = grid.querySelector(`#masonry-grid-column-${indexGrid + 1}-${currentColumn}`)
+							column.appendChild(item)
+
+							currentColumn++
+						})
+					})
+				}
+
+				function destroyMasonry() {
+					for (let i = 1; i <= itemCount; i++) {
+						const item = document.getElementById(`masonry-grid-item-${i}`)
+						item.parentElement.parentElement.appendChild(item)
+					}
+
+					grids.forEach(grid => {
+						const columns = grid.querySelectorAll('.masonry-grid-column')
+						columns.forEach(column => column.remove())
+						
+						grid.style.display = 'block'
+					})
+				}
+
+				function handleResize() {
+					if (window.innerWidth > settings.breakpoint && !isDesktop) {
+						isDesktop = true
+						createMasonry()
+					}
+					else if (window.innerWidth <= settings.breakpoint && isDesktop) {
+						isDesktop = false
+						destroyMasonry()
+					}
+				}
+
+				if (window.innerWidth > settings.breakpoint) {
+					isDesktop = true
+					createMasonry()
+				}
+
+				window.addEventListener('resize', handleResize)
+			}
+
+			document.addEventListener('DOMContentLoaded', function () {
+				masonryGrid('.conteudo', {
+					columns: 3
+				})
+			})
+		</script>
+	</body>
+</html>
